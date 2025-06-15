@@ -7,7 +7,6 @@ services:
     dockerfilePath: siswa/Dockerfile
     rootDir: siswa
     buildCommand: ""
-    startCommand: "apache2-foreground"
     envVars:
       - key: APP_ENV
         value: production
