@@ -22,8 +22,8 @@ _ide_helper.php
 _ide_helper_models.php
 
 # Vite
-/public/hot
-/public/build
+# /public/hot
+# /public/build
 /vite.config.js
 /resources/js/**/*.d.ts
 
