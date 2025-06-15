@@ -28,7 +28,7 @@ Route::middleware(['web', 'verify.nouid'])->group(function () {
         Route::get('/setup-pin', [SiswaController::class, 'showSetupPinForm'])->name('siswa.show-setup-pin');
         Route::post('/setup-pin', [RegisteredUserController::class, 'store'])->name('siswa.process-setup-pin');
         Route::get('/lupa-pin', [PasswordResetLinkController::class, 'create'])->name('siswa.show-lupa-pin');
-        Route::post('/lupa-pin', [PasswordResetLinkController::class, 'store'])->name('siswa.show-lupa-pin');
+        Route::post('/lupa-pin', [PasswordResetLinkController::class, 'store'])->name('siswa.store-lupa-pin');
         Route::post('/otp/send', [OtpController::class, 'sendOtp'])->name('otp.send');
         Route::post('/otp/verify', [OtpController::class, 'verifyOtp'])->name('otp.verif');
     });
