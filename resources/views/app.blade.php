@@ -53,10 +53,11 @@
     <script type="module" src="{{ config('app.url') }}/build/{{ $manifest['resources/js/app.tsx']['file'] }}"></script>
     @else
     @viteReactRefresh
-    @routes
+
     @vite(['resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
     @inertiaHead
     @endif
+    @routes
 </head>
 
 <body class="font-sans antialiased">
