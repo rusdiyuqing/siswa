@@ -1,25 +1,25 @@
 {
-  "_Modal-pRD38rqx.js": {
-    "file": "assets/Modal-pRD38rqx.js",
+  "_Modal-DuikQhNP.js": {
+    "file": "assets/Modal-DuikQhNP.js",
     "name": "Modal",
     "imports": [
       "resources/js/app.tsx"
     ]
   },
-  "_index-J2Aub2SG.js": {
-    "file": "assets/index-J2Aub2SG.js",
+  "_index-8KeNowXs.js": {
+    "file": "assets/index-8KeNowXs.js",
     "name": "index",
     "imports": [
       "resources/js/app.tsx"
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-5ITwsnti.css",
+    "file": "assets/app-DzDfub65.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-BmGNbGwP.js",
+    "file": "assets/app-Dn5VNY7D.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,
@@ -31,54 +31,54 @@
       "resources/js/pages/welcome.tsx"
     ],
     "css": [
-      "assets/app-5ITwsnti.css"
+      "assets/app-DzDfub65.css"
     ]
   },
   "resources/js/pages/Siswa/Index.tsx": {
-    "file": "assets/Index-C2Apr0WM.js",
+    "file": "assets/Index-D3heg6d2.js",
     "name": "Index",
     "src": "resources/js/pages/Siswa/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_index-J2Aub2SG.js",
+      "_index-8KeNowXs.js",
       "resources/js/pages/Siswa/Pin.tsx",
       "resources/js/pages/Siswa/SetupPin.tsx",
-      "_Modal-pRD38rqx.js"
+      "_Modal-DuikQhNP.js"
     ]
   },
   "resources/js/pages/Siswa/Pin.tsx": {
-    "file": "assets/Pin-BoE2PXzI.js",
+    "file": "assets/Pin-FFL_FeXe.js",
     "name": "Pin",
     "src": "resources/js/pages/Siswa/Pin.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_Modal-pRD38rqx.js"
+      "_Modal-DuikQhNP.js"
     ]
   },
   "resources/js/pages/Siswa/SetupPin.tsx": {
-    "file": "assets/SetupPin-Y8tz4wpv.js",
+    "file": "assets/SetupPin-BtR7cwTR.js",
     "name": "SetupPin",
     "src": "resources/js/pages/Siswa/SetupPin.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_Modal-pRD38rqx.js"
+      "_Modal-DuikQhNP.js"
     ]
   },
   "resources/js/pages/Siswa/lupa-pin.tsx": {
-    "file": "assets/lupa-pin-DjRSHClY.js",
+    "file": "assets/lupa-pin-BS6ISLcE.js",
     "name": "lupa-pin",
     "src": "resources/js/pages/Siswa/lupa-pin.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_index-J2Aub2SG.js"
+      "_index-8KeNowXs.js"
     ]
   },
   "resources/js/pages/welcome.tsx": {
-    "file": "assets/welcome-VZCkRRkE.js",
+    "file": "assets/welcome-baFljuIz.js",
     "name": "welcome",
     "src": "resources/js/pages/welcome.tsx",
     "isDynamicEntry": true,
