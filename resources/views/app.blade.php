@@ -43,22 +43,20 @@
 
     @php
     $isProduction = app()->environment('production');
-    $manifestPath = $isProduction ? '../public_html/build/manifest.json' : public_path('build/manifest.json');
     @endphp
 
-    @if ($isProduction && file_exists($manifestPath))
+    @if ($isProduction)
     @php
-    $manifest = json_decode(file_get_contents($manifestPath), true);
+    $manifest = json_decode(file_get_contents(public_path('build/manifest.json')), true);
     @endphp
     <link rel="stylesheet" href="{{ config('app.url') }}/build/{{ $manifest['resources/css/app.css']['file'] }}">
-    <script type="module" src="{{ config('app.url') }}/build/{{ $manifest['resources/js/app.js']['file'] }}"></script>
+    <script type="module" src="{{ config('app.url') }}/build/{{ $manifest['resources/js/app.tsx']['file'] }}"></script>
     @else
     @viteReactRefresh
-    @vite(['resources/js/app.js', 'resources/css/app.css'])
-    @endif
     @routes
     @vite(['resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
     @inertiaHead
+    @endif
 </head>
 
 <body class="font-sans antialiased">
