@@ -79,14 +79,24 @@ class OtpController extends Controller
             $response = Http::timeout(10)->post($this->WAPI_URL, $payload);
 
             RateLimiter::hit('send-otp:' . $phone, $this->decayMinutes * 60);
-            logger("API WA RESPONSE : ", ["response" => $response]);
-            // Return Inertia response with flash message
+            // Logging yang lebih baik
+            logger('WhatsApp API Response', [
+                'status' => $response->status(),
+                'response' => $response->json(),
+                'payload' => $payload,
+                'phone' => $phone
+            ]);            // Return Inertia response with flash message
             return back()->with([
                 'message' => 'OTP berhasil dikirim',
                 'expiresAt' => $expiresAt->toDateTimeString()
             ]);
         } catch (\Exception $e) {
-            Log::error('Error API WhatsApp', ['error' => $e->getMessage()]);
+            logger()->error('WhatsApp API Error', [
+                'error' => $e->getMessage(),
+                'payload' => $payload,
+                'phone' => $phone,
+                'trace' => $e->getTraceAsString()
+            ]);
             return back()->withErrors(['message' => 'Gagal mengirim OTP']);
         }
     }
