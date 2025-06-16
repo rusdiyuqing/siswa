@@ -64,6 +64,7 @@ export default function MenuDashboard() {
     const { auth, nouid, siswa, hasPin } = usePage<{ auth: Auth; siswa: Siswa; hasPin: boolean }>().props;
     const [activeItem, setActiveItem] = useState<number | null>(null);
     const [openPin, setOpenPin] = useState(false);
+    const [hasPined, setHasPined] = useState(hasPin);
     const [openSetupPin, setOpenSetupPin] = useState(false);
     const handleMasukPin = () => {
         setOpenPin(true);
@@ -115,7 +116,7 @@ export default function MenuDashboard() {
                         className="flex items-center justify-center space-x-2 rounded-xl border border-indigo-100 bg-white px-4 py-3 text-indigo-600 shadow-sm transition-colors hover:bg-indigo-50"
                     >
                         <FaExchangeAlt className="text-lg" />
-                        <span>{hasPin ? 'Ubah PIN' : 'Buat Pin'}</span>
+                        <span>{hasPined ? 'Ubah PIN' : 'Buat Pin'}</span>
                     </button>
                 </div>
             </div>
@@ -169,10 +170,16 @@ export default function MenuDashboard() {
                     {menuItems[activeItem].content}
                 </div>
             )}
-            <PinPage open={openPin} onClose={() => setOpenPin(false)} />
-            <SetupPinPage hasPin={hasPin} open={openSetupPin} onClose={() => setOpenSetupPin(false)} />
-            {/*  {toggle === 'reg' && <SetupPinPage />}
-            {toggle === 'forgot' && <SetupPinPage forgot={toggle}/>} */}
+            <PinPage
+                setOpenSetupPin={() => {
+                    setOpenSetupPin(true);
+                    setOpenPin(false);
+                }}
+                hasPin={hasPined}
+                open={openPin}
+                onClose={() => setOpenPin(false)}
+            />
+            <SetupPinPage setHasPined={()=>setHasPined(true)} hasPin={hasPined} open={openSetupPin} onClose={() => setOpenSetupPin(false)} />
         </div>
     );
 }

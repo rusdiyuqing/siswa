@@ -1,13 +1,15 @@
 import { Modal } from '@/components/ui/Modal';
+import { maskPhoneNumber } from '@/lib/utils';
+import { Siswa } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { ArrowLeftIcon, EyeIcon, EyeOffIcon } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
-const SetupPinPage = ({ hasPin, open, onClose }: { hasPin: boolean; open: boolean; onClose: () => void }) => {
-    const { message, errors, nouid } = usePage<{ message: string }>().props;
+const SetupPinPage = ({ setHasPined, hasPin, open, onClose }: { setHasPined: () => void; hasPin: boolean; open: boolean; onClose: () => void }) => {
+    const { siswa, message, errors, nouid } = usePage<{ message: string; siswa: Siswa; errors: Record<string, string>; nouid: string }>().props;
     const [step, setStep] = useState<'phone' | 'otp' | 'pin'>('phone');
     const [countdown, setCountdown] = useState(0);
-    const { data, setData, post, processing } = useForm({
+    const { data, setData, post, processing, reset } = useForm({
         phone: '',
         otp: '',
         pin: '',
@@ -28,7 +30,7 @@ const SetupPinPage = ({ hasPin, open, onClose }: { hasPin: boolean; open: boolea
 
     const handlePhoneSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const url = hasPin ? route('siswa.forgot-pin') : route('otp.send');
+        const url = hasPin ? route('siswa.forgot-pin', { nouid: nouid as string }) : route('otp.send', { nouid: nouid as string });
         post(url, {
             onSuccess: () => {
                 setStep('otp');
@@ -43,8 +45,7 @@ const SetupPinPage = ({ hasPin, open, onClose }: { hasPin: boolean; open: boolea
     const handleOtpSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post(`/${nouid}/otp/verify`, {
-            onSuccess: (data) => {
-                console.log(data);
+            onSuccess: () => {
                 setStep('pin');
                 if (pinRefs.current[0]) {
                     pinRefs.current[0].focus();
@@ -55,7 +56,14 @@ const SetupPinPage = ({ hasPin, open, onClose }: { hasPin: boolean; open: boolea
 
     const handlePinSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(`/${nouid}/setup-pin`);
+        post(`/${nouid}/setup-pin`, {
+            onSuccess: () => {
+                onClose();
+                setHasPined();
+                reset();
+                setStep('phone');
+            },
+        });
     };
 
     const resendOtp = () => {
@@ -117,7 +125,10 @@ const SetupPinPage = ({ hasPin, open, onClose }: { hasPin: boolean; open: boolea
                 <h2 className="text-center text-2xl font-bold text-gray-900">
                     {hasPin ? 'Masukkan Nomor HP Anda yang terdaftar' : 'Daftarkan Nomor HP Anda'}
                 </h2>
-                <p className="mt-2 text-center text-sm text-gray-600">Kami akan mengirimkan kode OTP ke nomor ini</p>
+                <p className="mt-2 text-center text-sm text-gray-600">
+                    Kami akan mengirimkan kode OTP ke nomor ini <br />
+                    {maskPhoneNumber(siswa.tel ?? '')}
+                </p>
             </div>
 
             {errors.phone && <div className="text-center text-sm text-red-500">{errors.phone}</div>}

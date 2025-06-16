@@ -58,10 +58,10 @@ class SiswaController extends Controller
             }
 
             return Inertia::render('Siswa/Index', [
+                "hasPin" => true,
                 'toggle' => null,
                 'siswa' => $siswa,
                 'nouid' => $nouid,
-                'indentitas' => $indentitas,
             ]);
         }
         session(['current_nouid' => $nouid]);

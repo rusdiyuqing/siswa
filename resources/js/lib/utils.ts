@@ -36,17 +36,9 @@ export const maskPhoneNumber = (phoneNumber: string, visibleDigits: number = 2):
     return phoneNumber; // Tidak masking jika terlalu pendek
   }
 
-  const firstPart = phoneNumber.substring(0, visibleDigits);
+  const firstPart = phoneNumber.substring(0, 4);
   const lastPart = phoneNumber.substring(phoneNumber.length - visibleDigits);
   const maskedPart = '*'.repeat(phoneNumber.length - (visibleDigits * 2));
 
   return `${firstPart}${maskedPart}${lastPart}`;
 };
-
-// Contoh penggunaan:
-const namaAsli = "WAHYU WIJAYA CAHYA";
-const nomorAsli = "112233445566";
-
-console.log(maskName(namaAsli));    // Output: W**U W**A C**A
-console.log(maskPhoneNumber(nomorAsli)); // Output: 11******66
-console.log(maskPhoneNumber("12345678", 2)); // Output: 12***78
