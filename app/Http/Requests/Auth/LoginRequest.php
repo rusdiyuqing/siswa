@@ -55,7 +55,8 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'pin' => __('auth.failed'),
+                // 'pin' => __('auth.failed'),
+                'pin' => "PIN yang Anda Masukkan Salah",
             ]);
         }
 
