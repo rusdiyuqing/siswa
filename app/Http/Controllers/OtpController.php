@@ -44,9 +44,13 @@ class OtpController extends Controller
         }
 
         $message = "Kode OTP Anda: $otp, berlaku 5 menit.";
-
+        $apiwa = env("API_WA");
+        if(!$apiwa){
+            logger('API_WA : ', ['api_wa'=> $apiwa]);
+            return back()->withErrors(['message' => 'API TIDAK DITEMUKAN']);
+        }
         try {
-            $response = Http::post(env('API_WA'), [
+            $response = Http::timeout(10)->post(env('API_WA'), [
                 'number' => $phone,
                 'pesan' => $message,
                 'idclient' => env('WA_CLIENT_ID', '13')
