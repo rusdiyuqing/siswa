@@ -22,7 +22,7 @@ const sizeMap = {
 };
 
 export const Modal: React.FC<ModalProps> = ({
-  title,
+  title='',
   size = "md",
   isOpen,
   onClose,
@@ -61,7 +61,7 @@ export const Modal: React.FC<ModalProps> = ({
       <div
         className={`bg-secondary text-secondary-foreground rounded-lg shadow-lg overflow-auto w-full ${sizeMap[size]} ${className}`}
       >
-        {title && <ModalHeader onClose={onClose}>{title}</ModalHeader>}
+        <ModalHeader onClose={onClose}>{title}</ModalHeader>
         <ModalBody>{children}</ModalBody>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { Modal } from '@/components/ui/Modal';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import React, { useEffect, useRef, useState } from 'react';
 
 interface PinFormData {
@@ -8,12 +8,16 @@ interface PinFormData {
     [key: string]: string;
 }
 
-const PinPage: React.FC = () => {
+interface PinPageProps {
+    open: boolean;
+    onClose: () => void;
+}
+
+const PinPage: React.FC<PinPageProps> = ({ open, onClose }) => {
     const { errors, nouid } = usePage<{ errors: Record<string, string>; nouid: string }>().props;
-    const [open, setOpen] = useState(true);
     const { data, setData, post, processing } = useForm<PinFormData>({
         pin: '',
-        nouid: '',
+        nouid: nouid ?? '',
     });
     const [inputType, setInputType] = useState<'password' | 'text'>('password');
     const inputRefs = useRef<Array<HTMLInputElement | null>>(Array(6).fill(null));
@@ -41,6 +45,9 @@ const PinPage: React.FC = () => {
 
         post(`/${data.nouid}/verify-pin`, {
             preserveState: true,
+            onSuccess: () => {
+                onClose();
+            },
             onError: () => {
                 setData('pin', '');
                 // Refocus first input on error
@@ -87,7 +94,7 @@ const PinPage: React.FC = () => {
     };
 
     return (
-        <Modal isOpen={open} onClose={() => setOpen(false)}>
+        <Modal isOpen={open} onClose={onClose}>
             <div className="flex items-center justify-center">
                 <Head title="Masukkan PIN" />
 
@@ -143,13 +150,6 @@ const PinPage: React.FC = () => {
                             >
                                 {processing ? 'Memverifikasi...' : 'Masuk'}
                             </button>
-                            <Link
-                                href={route('siswa.show-lupa-pin', nouid)}
-                                className="text-sm text-primary hover:text-primary/80"
-                                onClick={() => setOpen(false)}
-                            >
-                                Lupa PIN?
-                            </Link>
                         </div>
                     </form>
                 </div>

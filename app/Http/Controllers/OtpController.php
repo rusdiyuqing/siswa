@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Indentitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Carbon;
@@ -27,7 +28,22 @@ class OtpController extends Controller
         $this->WAPI_USER = env('WAPI_USER');
         $this->WAPI_SK = env('WAPI_SK');
     }
+    public function forgotRequestOtp(Request $request, $nouid)
+    {
+        $request->validate([
+            'phone' => 'required|string|regex:/^[0-9]+$/|min:10|max:15'
+        ]);
 
+        $indentitas = Indentitas::where('nouid', $nouid)->firstOrFail();
+        $siswa = $indentitas->siswa()->first();
+        $phone = $this->formatPhoneNumber($request->phone);
+        if ($siswa->tel !== $phone) {
+            return back()->withErrors([
+                'message' => 'Nomor telepon yang Anda masukkan Salah',
+            ]);
+        }
+        return route('otp.send', $nouid);
+    }
     public function sendOtp(Request $request, $nouid)
     {
         $request->validate([
@@ -56,17 +72,6 @@ class OtpController extends Controller
         }
 
         $message = "Kode OTP Anda: $otp, berlaku 5 menit.";
-        // $apiwa = env("API_WA");
-        // $payload = [
-        //     'number' => $phone,
-        //     'pesan' => $message,
-        //     'idclient' => env('WA_CLIENT_ID', '13')
-        // // ];
-        // if (!$apiwa) {
-        //     logger('API_WA : ', ['api_wa' => $apiwa]);
-        //     return back()->withErrors(['message' => 'API TIDAK DITEMUKAN']);
-        // }
-
         $payload = [
             "user_code" => $this->WAPI_USER,
             "device_id" => $this->WAPI_DEVICE_ID,
@@ -145,8 +150,9 @@ class OtpController extends Controller
         try {
             $record->update(['verified_at' => now()]);
             RateLimiter::clear('verify-otp:' . $phone);
+            Otp::where('expires_at', '<', now())->delete();
+            $record->delete();
 
-            // Return Inertia response with flash message
             return back()->with([
                 'message' => 'OTP berhasil diverifikasi'
             ]);

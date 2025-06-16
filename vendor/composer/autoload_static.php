@@ -35,6 +35,7 @@ class ComposerStaticInit6d580901de64f9d577d8c139cea61306
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
         '98caa11a197f6516a8e48aa4abb5ccc6' => __DIR__ . '/..' . '/inertiajs/inertia-laravel/helpers.php',
+        '6fe367e86e097c3f62463938dfd8aca1' => __DIR__ . '/../..' . '/app/Helpers/AutoloadHelpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -471,6 +472,7 @@ class ComposerStaticInit6d580901de64f9d577d8c139cea61306
     );
 
     public static $classMap = array (
+        'App\\Helpers\\MaskingHelper' => __DIR__ . '/../..' . '/app/Helpers/MaskingHelper.php',
         'App\\Http\\Controllers\\Auth\\AuthenticatedSessionController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/AuthenticatedSessionController.php',
         'App\\Http\\Controllers\\Auth\\ConfirmablePasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ConfirmablePasswordController.php',
         'App\\Http\\Controllers\\Auth\\EmailVerificationNotificationController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/EmailVerificationNotificationController.php',

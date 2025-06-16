@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\MaskingHelper;
 use App\Models\Indentitas;
 use App\Models\Siswa;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -26,12 +27,19 @@ class SiswaController extends Controller
         // Jika siswa belum memiliki PIN
         if (empty($siswa->pin)) {
             return Inertia::render('Siswa/Index', [
-                // 'siswa'=> $siswa,
-                'toggle' => 'reg',
                 'nouid' => $nouid,
-                // 'message' => 'Silakan buat PIN 6 digit untuk akun Anda'
+                "hasPin" => false,
+                'siswa' => [
+                    "namlen" => MaskingHelper::maskString($siswa->namlen),
+                    "nis" => MaskingHelper::maskNumber($siswa->nis),
+                    "kel" => MaskingHelper::maskClass($siswa->kel),
+                    "tel" => MaskingHelper::maskPhone($siswa->tel),
+                ],
+                'error' => session('error'),
             ]);
         }
+
+
         if (session()->has('current_nouid') && session('current_nouid') !== $nouid) {
             Auth::guard('siswa')->logout();
             session()->forget('current_nouid');
@@ -59,8 +67,14 @@ class SiswaController extends Controller
         session(['current_nouid' => $nouid]);
         // Jika belum login, tampilkan form PIN
         return Inertia::render('Siswa/Index', [
-            'toggle' => 'log',
             'nouid' => $nouid,
+            "hasPin" => true,
+            'siswa' => [
+                "namlen" => MaskingHelper::maskString($siswa->namlen),
+                "nis" => MaskingHelper::maskNumber($siswa->nis),
+                "kel" => MaskingHelper::maskClass($siswa->kel),
+                "tel" => MaskingHelper::maskPhone($siswa->tel),
+            ],
             'error' => session('error'),
         ]);
     }
@@ -72,7 +86,5 @@ class SiswaController extends Controller
         return redirect()->route('siswa.index', ['nouid' => $nouid]);
     }
 
-    public function verifnope(Request $request){
-        
-    }
+    public function verifnope(Request $request) {}
 }

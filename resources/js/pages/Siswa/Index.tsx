@@ -1,24 +1,44 @@
 import DataSiswaContent from '@/components/siswa/DataSiswaContent';
 import ExtrakulikulerContent from '@/components/siswa/ExtrakulikulerContent';
 import TagihanContent from '@/components/siswa/TagihanContent';
-import { useRefreshData } from '@/hooks/use-refresh-data';
 import { Auth } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import {
+    FaExchangeAlt,
     FaFileInvoiceDollar,
     FaFootballBall,
     FaGraduationCap,
-    FaHistory,
     FaIdCard,
-    FaMoneyBillAlt,
-    FaSignOutAlt,
+    FaKey,
     FaTimes,
     FaUser,
     FaUserGraduate,
 } from 'react-icons/fa';
+import { FiLogOut } from 'react-icons/fi';
 import PinPage from './Pin';
 import SetupPinPage from './SetupPin';
+
+interface Siswa {
+    nis?: string;
+    nisn?: string;
+    namlen?: string;
+    nampan?: string;
+    namman?: string;
+    temlah?: string;
+    tgllah?: string;
+    jenkel?: string;
+    tel?: string;
+    ket?: string;
+    sta?: string;
+    staqd?: string;
+    rev?: string;
+    createdby?: string;
+    updatedby?: string;
+    kel?: string;
+    ala?: string;
+    pin?: string;
+}
 
 const menuItems = [
     {
@@ -41,49 +61,66 @@ const menuItems = [
     },
 ];
 export default function MenuDashboard() {
-    const { auth, toggle, nouid } = usePage<{ auth: Auth; toggle: 'log' | 'reg' | null }>().props;
-    const { data, refreshData, isRefreshing } = useRefreshData<Auth>('auth', auth);
-
-    const [open, setOpen] = useState(true);
+    const { auth, nouid, siswa, hasPin } = usePage<{ auth: Auth; siswa: Siswa; hasPin: boolean }>().props;
     const [activeItem, setActiveItem] = useState<number | null>(null);
-    const student = auth.user;
-    console.log();
-
+    const [openPin, setOpenPin] = useState(false);
+    const [openSetupPin, setOpenSetupPin] = useState(false);
+    const handleMasukPin = () => {
+        setOpenPin(true);
+    };
+    const handleSetupPin = () => {
+        setOpenSetupPin(true);
+    };
     return (
-        <div className="mx-auto min-h-screen w-full max-w-5xl p-4">
-            <Head title={auth.user?.namlen ?? 'Login'} />
-            <div className="mb-6 flex flex-col items-center gap-6 rounded-lg bg-card p-4 text-card-foreground shadow-sm sm:flex-row">
-                <div className="flex w-full flex-1 flex-col items-center space-y-4 sm:items-start">
-                    <div className="w-full max-w-md">
-                        <div className="flex items-center space-x-3">
-                            <FaUser className="flex-shrink-0 text-xl" />
-                            <h2 className="truncate text-xl font-semibold md:text-2xl">{student ? student.namlen : '******'}</h2>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                            <FaIdCard className="flex-shrink-0 text-lg" />
-                            <p className="text-base md:text-lg">NIS: {student ? student.nis : '*****'}</p>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                            <FaGraduationCap className="flex-shrink-0 text-lg" />
-                            <p className="text-base md:text-lg">Kelas: {student ? student.kel : '******'}</p>
-                        </div>
+        <div className="mx-auto min-h-screen max-w-2xl p-4">
+            <Head title={siswa?.namlen ?? 'Login'} />
+            <div className="mb-6 flex flex-col items-center gap-2 rounded-lg bg-card p-4 text-card-foreground shadow-sm">
+                <div className="flex w-full flex-1 flex-col items-start border-b-2 pb-8">
+                    <div className="flex items-center space-x-3">
+                        <FaUser className="flex-shrink-0 text-xl" />
+                        <h2 className="truncate text-xl font-semibold md:text-2xl">{siswa ? siswa.namlen : '******'}</h2>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                        <FaIdCard className="flex-shrink-0 text-lg" />
+                        <p className="text-base md:text-lg">NIS: {siswa ? siswa.nis : '*****'}</p>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                        <FaGraduationCap className="flex-shrink-0 text-lg" />
+                        <p className="text-base md:text-lg">Kelas: {siswa ? siswa.kel : '******'}</p>
                     </div>
                 </div>
-                <div>
-                    <Link
-                        href={route('siswa.logout', String(nouid))}
-                        method="post"
-                        as="button"
-                        className="flex items-center justify-center rounded-full bg-red-800 p-3 text-white transition-colors hover:bg-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none"
-                        title="Logout"
+                {/* Action Buttons */}
+                <div className="grid w-full grid-cols-2 items-center gap-4">
+                    {auth.user ? (
+                        <Link
+                            href={route('siswa.logout', String(nouid))}
+                            method="post"
+                            className="flex items-center justify-center space-x-2 rounded-xl border border-indigo-100 bg-red-800 px-4 py-3 text-white shadow-sm transition-colors hover:bg-red-700"
+                        >
+                            <FiLogOut className="text-lg" />
+                            <span>Keluar</span>
+                        </Link>
+                    ) : (
+                        <button
+                            onClick={() => handleMasukPin()}
+                            className="flex items-center justify-center space-x-2 rounded-xl border border-indigo-100 bg-white px-4 py-3 text-indigo-600 shadow-sm transition-colors hover:bg-indigo-50"
+                        >
+                            <FaKey className="text-lg" />
+                            <span>Masukan PIN</span>
+                        </button>
+                    )}
+
+                    <button
+                        onClick={() => handleSetupPin()}
+                        className="flex items-center justify-center space-x-2 rounded-xl border border-indigo-100 bg-white px-4 py-3 text-indigo-600 shadow-sm transition-colors hover:bg-indigo-50"
                     >
-                        <span className="px-2">Keluar</span>
-                        <FaSignOutAlt className="text-lg" />
-                    </Link>
+                        <FaExchangeAlt className="text-lg" />
+                        <span>{hasPin ? 'Ubah PIN' : 'Buat Pin'}</span>
+                    </button>
                 </div>
             </div>
 
-            <div className="mb-3 rounded-lg bg-card p-4 text-card-foreground shadow-sm">
+            {/* <div className="mb-3 rounded-lg bg-card p-4 text-card-foreground shadow-sm">
                 <div className="border-b border-primary/10 pb-3">
                     <span className="text-sm font-medium">Saldo Tabungan</span>
                     <h1 className="mt-1 text-2xl font-bold">Rp2.000.000</h1>
@@ -118,7 +155,7 @@ export default function MenuDashboard() {
                         <span className="mt-2 text-center text-sm font-semibold text-gray-800">{item.title}</span>
                     </button>
                 ))}
-            </div>
+            </div> */}
 
             {activeItem !== null && (
                 <div className="relative rounded-xl border border-t-4 border-gray-800 bg-blue-50 p-6 shadow-lg">
@@ -132,8 +169,10 @@ export default function MenuDashboard() {
                     {menuItems[activeItem].content}
                 </div>
             )}
-            {toggle === 'log' && <PinPage />}
-            {toggle === 'reg' && <SetupPinPage />}
+            <PinPage open={openPin} onClose={() => setOpenPin(false)} />
+            <SetupPinPage hasPin={hasPin} open={openSetupPin} onClose={() => setOpenSetupPin(false)} />
+            {/*  {toggle === 'reg' && <SetupPinPage />}
+            {toggle === 'forgot' && <SetupPinPage forgot={toggle}/>} */}
         </div>
     );
 }

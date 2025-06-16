@@ -3,11 +3,10 @@ import { Head, useForm, usePage } from '@inertiajs/react';
 import { ArrowLeftIcon, EyeIcon, EyeOffIcon } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
-const SetupPinPage = () => {
+const SetupPinPage = ({ hasPin, open, onClose }: { hasPin: boolean; open: boolean; onClose: () => void }) => {
     const { message, errors, nouid } = usePage<{ message: string }>().props;
     const [step, setStep] = useState<'phone' | 'otp' | 'pin'>('phone');
     const [countdown, setCountdown] = useState(0);
-    const [open, setOpen] = useState(true);
     const { data, setData, post, processing } = useForm({
         phone: '',
         otp: '',
@@ -29,7 +28,8 @@ const SetupPinPage = () => {
 
     const handlePhoneSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(`/${nouid}/otp/send`, {
+        const url = hasPin ? route('siswa.forgot-pin') : route('otp.send');
+        post(url, {
             onSuccess: () => {
                 setStep('otp');
                 setCountdown(60);
@@ -59,7 +59,7 @@ const SetupPinPage = () => {
     };
 
     const resendOtp = () => {
-        post(`/${nouid}/resend-otp`, {
+        post(`/${nouid}/otp/send`, {
             onSuccess: () => {
                 setCountdown(60);
             },
@@ -114,7 +114,9 @@ const SetupPinPage = () => {
     const renderPhoneStep = () => (
         <div className="space-y-6">
             <div>
-                <h2 className="text-center text-2xl font-bold text-gray-900">Daftarkan Nomor HP Anda</h2>
+                <h2 className="text-center text-2xl font-bold text-gray-900">
+                    {hasPin ? 'Masukkan Nomor HP Anda yang terdaftar' : 'Daftarkan Nomor HP Anda'}
+                </h2>
                 <p className="mt-2 text-center text-sm text-gray-600">Kami akan mengirimkan kode OTP ke nomor ini</p>
             </div>
 
@@ -334,7 +336,7 @@ const SetupPinPage = () => {
     );
 
     return (
-        <Modal isOpen={open} onClose={() => setOpen(false)}>
+        <Modal isOpen={open} onClose={onClose}>
             <div className="flex items-center justify-center">
                 <Head title={step === 'phone' ? 'Daftar Nomor HP' : step === 'otp' ? 'Verifikasi OTP' : 'Buat PIN'} />
 
