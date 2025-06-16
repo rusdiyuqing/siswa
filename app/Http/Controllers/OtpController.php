@@ -15,6 +15,18 @@ class OtpController extends Controller
 {
     protected $maxAttempts = 3;
     protected $decayMinutes = 5;
+    protected $WAPI_URL;
+    protected $WAPI_DEVICE_ID;
+    protected $WAPI_USER;
+    protected $WAPI_SK;
+
+    public function __construct()
+    {
+        $this->WAPI_URL = env('WAPI_URL');
+        $this->WAPI_DEVICE_ID = env('WAPI_DEVICE_ID');
+        $this->WAPI_USER = env('WAPI_USER');
+        $this->WAPI_SK = env('WAPI_SK');
+    }
 
     public function sendOtp(Request $request, $nouid)
     {
@@ -24,7 +36,7 @@ class OtpController extends Controller
 
         $phone = $this->formatPhoneNumber($request->phone);
 
-        if (RateLimiter::tooManyAttempts('send-otp:'.$phone, $this->maxAttempts)) {
+        if (RateLimiter::tooManyAttempts('send-otp:' . $phone, $this->maxAttempts)) {
             throw ValidationException::withMessages([
                 'phone' => ['Terlalu banyak permintaan OTP. Silakan coba lagi nanti.']
             ]);
@@ -44,26 +56,35 @@ class OtpController extends Controller
         }
 
         $message = "Kode OTP Anda: $otp, berlaku 5 menit.";
-        $apiwa = env("API_WA");
-        if(!$apiwa){
-            logger('API_WA : ', ['api_wa'=> $apiwa]);
-            return back()->withErrors(['message' => 'API TIDAK DITEMUKAN']);
-        }
+        // $apiwa = env("API_WA");
+        // $payload = [
+        //     'number' => $phone,
+        //     'pesan' => $message,
+        //     'idclient' => env('WA_CLIENT_ID', '13')
+        // // ];
+        // if (!$apiwa) {
+        //     logger('API_WA : ', ['api_wa' => $apiwa]);
+        //     return back()->withErrors(['message' => 'API TIDAK DITEMUKAN']);
+        // }
+
+        $payload = [
+            "user_code" => $this->WAPI_USER,
+            "device_id" => $this->WAPI_DEVICE_ID,
+            "receiver" => $phone,
+            "message" => $message,
+            "secret" => $this->WAPI_SK,
+
+        ];
         try {
-            $response = Http::timeout(10)->post(env('API_WA'), [
-                'number' => $phone,
-                'pesan' => $message,
-                'idclient' => env('WA_CLIENT_ID', '13')
-            ]);
+            $response = Http::timeout(10)->post($this->WAPI_URL, $payload);
 
-            RateLimiter::hit('send-otp:'.$phone, $this->decayMinutes * 60);
-
+            RateLimiter::hit('send-otp:' . $phone, $this->decayMinutes * 60);
+            logger("API WA RESPONSE : ", ["response" => $response]);
             // Return Inertia response with flash message
             return back()->with([
                 'message' => 'OTP berhasil dikirim',
                 'expiresAt' => $expiresAt->toDateTimeString()
             ]);
-
         } catch (\Exception $e) {
             Log::error('Error API WhatsApp', ['error' => $e->getMessage()]);
             return back()->withErrors(['message' => 'Gagal mengirim OTP']);
@@ -79,7 +100,7 @@ class OtpController extends Controller
 
         $phone = $this->formatPhoneNumber($request->phone);
 
-        if (RateLimiter::tooManyAttempts('verify-otp:'.$phone, $this->maxAttempts)) {
+        if (RateLimiter::tooManyAttempts('verify-otp:' . $phone, $this->maxAttempts)) {
             throw ValidationException::withMessages([
                 'otp' => ['Terlalu banyak percobaan. Silakan coba lagi nanti.']
             ]);
@@ -88,7 +109,7 @@ class OtpController extends Controller
         $record = Otp::where('phone', $phone)->first();
 
         if (!$record) {
-            RateLimiter::hit('verify-otp:'.$phone, $this->decayMinutes * 60);
+            RateLimiter::hit('verify-otp:' . $phone, $this->decayMinutes * 60);
             throw ValidationException::withMessages([
                 'otp' => ['OTP tidak ditemukan']
             ]);
@@ -103,9 +124,9 @@ class OtpController extends Controller
         if ($record->otp !== $request->otp) {
             $record->increment('attempts');
             $remainingAttempts = $this->maxAttempts - $record->attempts;
-            
-            RateLimiter::hit('verify-otp:'.$phone, $this->decayMinutes * 60);
-            
+
+            RateLimiter::hit('verify-otp:' . $phone, $this->decayMinutes * 60);
+
             throw ValidationException::withMessages([
                 'otp' => ["OTP salah. Sisa percobaan: $remainingAttempts"]
             ]);
@@ -113,13 +134,12 @@ class OtpController extends Controller
 
         try {
             $record->update(['verified_at' => now()]);
-            RateLimiter::clear('verify-otp:'.$phone);
-            
+            RateLimiter::clear('verify-otp:' . $phone);
+
             // Return Inertia response with flash message
             return back()->with([
                 'message' => 'OTP berhasil diverifikasi'
             ]);
-            
         } catch (\Exception $e) {
             Log::error('Gagal verifikasi OTP', ['error' => $e->getMessage()]);
             return back()->withErrors(['message' => 'Gagal verifikasi OTP']);
