@@ -1,21 +1,26 @@
 import DataSiswaContent from '@/components/siswa/DataSiswaContent';
 import ExtrakulikulerContent from '@/components/siswa/ExtrakulikulerContent';
 import TagihanContent from '@/components/siswa/TagihanContent';
+import AppLayout from '@/Layout/AppLayout';
 import { Auth } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import {
     FaExchangeAlt,
     FaFileInvoiceDollar,
     FaFootballBall,
     FaGraduationCap,
+    FaHistory,
     FaIdCard,
     FaKey,
+    FaPlusCircle,
     FaTimes,
     FaUser,
     FaUserGraduate,
+    FaWallet,
 } from 'react-icons/fa';
 import { FiLogOut } from 'react-icons/fi';
+import Topup from '../Topup';
 import PinPage from './Pin';
 import SetupPinPage from './SetupPin';
 
@@ -60,9 +65,11 @@ const menuItems = [
         content: <ExtrakulikulerContent />,
     },
 ];
+
 export default function MenuDashboard() {
     const { auth, nouid, siswa, hasPin } = usePage<{ auth: Auth; siswa: Siswa; hasPin: boolean }>().props;
     const [activeItem, setActiveItem] = useState<number | null>(null);
+    const [page, setPage] = useState<'index' | 'topup' | 'riwayat'>('index');
     const [openPin, setOpenPin] = useState(false);
     const [hasPined, setHasPined] = useState(hasPin);
     const [openSetupPin, setOpenSetupPin] = useState(false);
@@ -72,92 +79,80 @@ export default function MenuDashboard() {
     const handleSetupPin = () => {
         setOpenSetupPin(true);
     };
-    return (
-        <div className="mx-auto min-h-screen max-w-2xl p-4">
-            <Head title={siswa?.namlen ?? 'Login'} />
-            <div className="mb-6 flex flex-col items-center gap-2 rounded-lg bg-card p-4 text-card-foreground shadow-sm">
-                <div className="flex w-full flex-1 flex-col items-start border-b-2 pb-8">
-                    <div className="flex items-center space-x-3">
-                        <FaUser className="flex-shrink-0 text-xl" />
-                        <h2 className="truncate text-xl font-semibold md:text-2xl">{siswa ? siswa.namlen : '******'}</h2>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                        <FaIdCard className="flex-shrink-0 text-lg" />
-                        <p className="text-base md:text-lg">NIS: {siswa ? siswa.nis : '*****'}</p>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                        <FaGraduationCap className="flex-shrink-0 text-lg" />
-                        <p className="text-base md:text-lg">Kelas: {siswa ? siswa.kel : '******'}</p>
-                    </div>
+    const handlePage = (page: 'index' | 'topup' | 'riwayat') => {
+        setPage(page);
+    };
+    return page === 'index' ? (
+        <AppLayout title={siswa?.namlen ?? 'Login'}>
+            <div className="flex w-full flex-col items-start rounded-t-lg bg-white p-4 px-6">
+                <div className="flex items-center space-x-3">
+                    <FaUser className="flex-shrink-0 text-xl text-primary" />
+                    <h2 className="truncate text-xl font-semibold text-primary md:text-2xl">{siswa ? siswa.namlen : '******'}</h2>
                 </div>
-                {/* Action Buttons */}
-                <div className="grid w-full grid-cols-2 items-center gap-4">
-                    {auth.user ? (
-                        <Link
-                            href={route('siswa.logout', String(nouid))}
-                            method="post"
-                            className="flex items-center justify-center space-x-2 rounded-xl border border-indigo-100 bg-red-800 px-4 py-3 text-white shadow-sm transition-colors hover:bg-red-700"
-                        >
-                            <FiLogOut className="text-lg" />
-                            <span>Keluar</span>
-                        </Link>
-                    ) : (
-                        <button
-                            onClick={() => handleMasukPin()}
-                            className="flex items-center justify-center space-x-2 rounded-xl border border-indigo-100 bg-white px-4 py-3 text-indigo-600 shadow-sm transition-colors hover:bg-indigo-50"
-                        >
-                            <FaKey className="text-lg" />
-                            <span>Masukan PIN</span>
-                        </button>
-                    )}
-
+                <div className="flex items-center space-x-3">
+                    <FaIdCard className="flex-shrink-0 text-lg text-primary" />
+                    <p className="text-primary md:text-lg">NIS: {siswa ? siswa.nis : '*****'}</p>
+                </div>
+                <div className="flex items-center space-x-3">
+                    <FaGraduationCap className="flex-shrink-0 text-lg text-primary" />
+                    <p className="text-primary md:text-lg">Kelas: {siswa ? siswa.kel : '******'}</p>
+                </div>
+            </div>
+            <div className="grid w-full grid-cols-2 items-center gap-4 border-b-2 p-2 px-6">
+                {auth.user ? (
+                    <Link
+                        href={route('siswa.logout', String(nouid))}
+                        method="post"
+                        className="flex items-center justify-center space-x-2 rounded-xl border border-indigo-100 bg-red-800 px-4 py-3 text-white shadow-sm transition-colors hover:bg-red-700"
+                    >
+                        <FiLogOut className="text-lg" />
+                        <span>Keluar</span>
+                    </Link>
+                ) : (
                     <button
-                        onClick={() => handleSetupPin()}
+                        onClick={() => handleMasukPin()}
                         className="flex items-center justify-center space-x-2 rounded-xl border border-indigo-100 bg-white px-4 py-3 text-indigo-600 shadow-sm transition-colors hover:bg-indigo-50"
                     >
-                        <FaExchangeAlt className="text-lg" />
-                        <span>{hasPined ? 'Ubah PIN' : 'Buat Pin'}</span>
+                        <FaKey className="text-lg" />
+                        <span>Masukan PIN</span>
                     </button>
+                )}
+
+                <button
+                    onClick={() => handleSetupPin()}
+                    className="flex items-center justify-center space-x-2 rounded-xl border border-indigo-100 bg-white px-4 py-3 text-indigo-600 shadow-sm transition-colors hover:bg-indigo-50"
+                >
+                    <FaExchangeAlt className="text-lg" />
+                    <span>{hasPined ? 'Ubah PIN' : 'Buat Pin'}</span>
+                </button>
+            </div>
+            <div className="flex w-full shadow-[0px_10px_10px_-4px_rgba(0,0,0,0.1)] shadow-black">
+                <div className="grid w-full grid-cols-2 items-center gap-4 p-4 px-6">
+                    {/* Saldo Section */}
+                    <div className="space-y-2">
+                        <h1 className="text-lg font-semibold text-primary-foreground">Saldo Tabungan</h1>
+                        <div className="flex items-center gap-2 text-primary-foreground">
+                            <FaWallet className="text-xl" />
+                            <span className="text-xl font-bold">Rp. 500.000</span>
+                        </div>
+                    </div>
+
+                    {/* Tombol Aksi */}
+                    <div className="flex flex-row items-end justify-end gap-2">
+                        <button
+                            onClick={() => handlePage('topup')}
+                            className="flex items-center gap-2 rounded-md bg-primary-foreground px-4 py-2 text-primary hover:bg-accent"
+                        >
+                            <FaPlusCircle />
+                            <span>Topup</span>
+                        </button>
+                        <button className="flex items-center gap-2 rounded-md bg-primary-foreground px-4 py-2 text-primary hover:bg-accent">
+                            <FaHistory />
+                            <span>Riwayat</span>
+                        </button>
+                    </div>
                 </div>
             </div>
-
-            {/* <div className="mb-3 rounded-lg bg-card p-4 text-card-foreground shadow-sm">
-                <div className="border-b border-primary/10 pb-3">
-                    <span className="text-sm font-medium">Saldo Tabungan</span>
-                    <h1 className="mt-1 text-2xl font-bold">Rp2.000.000</h1>
-                </div>
-
-                <div className="mt-3 flex justify-between gap-2">
-                    <button
-                        className="flex flex-1 flex-col items-center justify-center rounded-lg bg-primary p-3 transition-colors duration-200 hover:bg-sky-500/80"
-                        onClick={() => null}
-                    >
-                        <FaMoneyBillAlt className="h-6 w-6" />
-                        <span className="mt-2 text-sm font-medium">Top Up</span>
-                    </button>
-
-                    <button
-                        className="flex flex-1 flex-col items-center justify-center rounded-lg bg-primary p-3 transition-colors duration-200 hover:bg-sky-500/80"
-                        onClick={() => null}
-                    >
-                        <FaHistory className="h-6 w-6" />
-                        <span className="mt-2 text-sm font-medium">Riwayat</span>
-                    </button>
-                </div>
-            </div>
-            <div className="mb-6 grid grid-cols-3 gap-4 sm:grid-cols-5">
-                {menuItems.map((item, index) => (
-                    <button
-                        key={index}
-                        className={`flex flex-col items-center justify-center rounded-xl border border-t-5 p-2 transition duration-200 ${item.color}`}
-                        onClick={() => setActiveItem(index)}
-                    >
-                        {item.icon}
-                        <span className="mt-2 text-center text-sm font-semibold text-gray-800">{item.title}</span>
-                    </button>
-                ))}
-            </div> */}
-
             {activeItem !== null && (
                 <div className="relative rounded-xl border border-t-4 border-gray-800 bg-blue-50 p-6 shadow-lg">
                     <button
@@ -179,7 +174,9 @@ export default function MenuDashboard() {
                 open={openPin}
                 onClose={() => setOpenPin(false)}
             />
-            <SetupPinPage setHasPined={()=>setHasPined(true)} hasPin={hasPined} open={openSetupPin} onClose={() => setOpenSetupPin(false)} />
-        </div>
+            <SetupPinPage setHasPined={() => setHasPined(true)} hasPin={hasPined} open={openSetupPin} onClose={() => setOpenSetupPin(false)} />
+        </AppLayout>
+    ) : (
+        page === 'topup' && <Topup onClose={() => setPage('index')} />
     );
 }

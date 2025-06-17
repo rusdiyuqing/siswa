@@ -63,3 +63,21 @@ export interface Siswa {
   updatedby: number;
   updatedat: string;
 }
+
+
+export interface Bank {
+  id: number;
+  name: string;
+  logo: string;
+}
+
+export interface Nominal {
+  id: number;
+  amount: number;
+}
+
+export interface PaymentMethod {
+  id: number;
+  name: string;
+  code: string;
+}
