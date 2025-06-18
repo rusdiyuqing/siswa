@@ -136,7 +136,9 @@ class OtpController extends Controller
         ];
         try {
             $response = Http::timeout(10)->post($this->WAPI_URL, $payload);
-
+            if (!$response) {
+                return back()->withErrors(['message' => 'Gagal mengirim OTP Request Timeout']);
+            }
             RateLimiter::hit('send-otp:' . $phone, $this->decayMinutes * 60);
             // Logging yang lebih baik
             logger('WhatsApp API Response', [

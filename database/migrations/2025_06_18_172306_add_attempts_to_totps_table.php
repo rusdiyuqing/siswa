@@ -11,21 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('totps', function (Blueprint $table) {
-            $table->id();
-            $table->string('phone'); 
+        Schema::table('totps', function (Blueprint $table) {
             $table->unsignedInteger('attempts')->default(0);
-            $table->string('otp');  
-            $table->timestamp('expires_at'); 
-            $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('otps');
+        Schema::table('totps', function (Blueprint $table) {
+            $table->dropColumn('attempts');
+        });
     }
 };
