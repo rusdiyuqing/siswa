@@ -153,6 +153,19 @@ export default function MenuDashboard() {
                     </div>
                 </div>
             </div>
+
+            <div className="mb-6 grid grid-cols-3 gap-4 sm:grid-cols-5">
+                {menuItems.map((item, index) => (
+                    <button
+                        key={index}
+                        className={`flex flex-col items-center justify-center rounded-xl border border-t-5 p-2 transition duration-200 ${item.color}`}
+                        onClick={() => setActiveItem(index)}
+                    >
+                        {item.icon}
+                        <span className="mt-2 text-center text-sm font-semibold text-gray-800">{item.title}</span>
+                    </button>
+                ))}
+            </div>
             {activeItem !== null && (
                 <div className="relative rounded-xl border border-t-4 border-gray-800 bg-blue-50 p-6 shadow-lg">
                     <button
